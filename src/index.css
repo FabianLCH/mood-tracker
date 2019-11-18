@@ -1,5 +1,8 @@
+* { margin: 0; padding: 0 }
+
+html { background-color: #E5AD72 }
+
 body {
-  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
@@ -10,4 +13,12 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+p, h3, button { font-family:  'Montserrat', sans-serif; }
+
+.main-container { margin: 25px }
+	
+.current-feeling { 
+  padding: 5px;
 }

@@ -1,16 +1,19 @@
 import React from "react";
-import { Stage, Layer } from "react-konva";
+import { Stage, Layer, Circle } from "react-konva";
 
-import { config } from "../utils/pieConfigOptions";
+import { canvasOptions, config } from "../utils/pieConfigOptions";
 
 const Pie = (props) => {
 
-    let { centerX, centerY, radius, padding, crustRadius } = config;
+    let { centerX, centerY, radius, crustRadius, crustColor } = config;
+    let { width, height } = canvasOptions;
 
     return (
-        <Stage width={ centerX + radius + (padding * 2) } height={centerY + radius + (padding * 2) + crustRadius }>
+        <Stage width={ width } height={ height }>
             <Layer>
+                <Circle x={centerX} y={centerY} radius={radius + crustRadius} fill={crustColor} />
                 { props.slices }
+                { props.labels }
             </Layer>
         </Stage>
     );

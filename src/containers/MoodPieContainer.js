@@ -98,6 +98,7 @@ const MoodPieContainer = () => {
             // text color and size will be set through config options 
             return (
                 <Text
+                    key={index}
                     x={centerX + dx + offsetX}
                     y={centerY + dy + offsetY}
 
@@ -116,7 +117,7 @@ const MoodPieContainer = () => {
         updateSlices(sliceList);
         updateLabels(sliceLabels);
 
-    }, []);
+    }, [centerX, centerY, radius]);
 
     return (
         <div className="main-container">

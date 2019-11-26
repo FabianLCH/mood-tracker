@@ -55,3 +55,8 @@ export const data = [
     portionColor: "#D5BC4B"
   }
 ];
+
+const moodColorMapping = {}
+data.forEach( (entry) => { moodColorMapping[entry.name] = entry.portionColor });
+
+export { moodColorMapping };

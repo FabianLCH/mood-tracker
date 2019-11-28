@@ -1,9 +1,33 @@
 import React, { useState, useEffect } from "react";
-
 import { Shape, Text } from "react-konva";
+import axios from "axios";
+
 import { config, data } from "../utils/pieConfigOptions";
 
 import Pie from "../components/Pie";
+
+const neutral = { name: "Neutral", color: "#DCDCDB"};
+const statusMessages = {
+    "awaiting": "You have not selected a mood yet.",
+    "submitted": "Saving your response...",
+    "failed": "Oops! It looks like something went wrong.",
+    "recorded": "Thank you! Your response has been recorded"
+}
+const recordResponse = (entryStateCallback, selectedMood) => {
+    entryStateCallback("submitted");
+
+    axios.post("http://localhost:4000/api/moods", { mood: selectedMood.name }).then(
+        (res) => {
+            entryStateCallback("recorded");
+            setTimeout( () => { window.location = "/statistics"}, 3000);
+        }
+    ).catch(
+        (error) => {
+            entryStateCallback("failed");
+            console.log("Could not record entry,\n", error);
+        }
+    )
+}
 
 const MoodPieContainer = () => {
 
@@ -12,7 +36,8 @@ const MoodPieContainer = () => {
     // state configuration 
     const [ pieSlices, updateSlices ] = useState([]);
     const [ labelNodes, updateLabels ] = useState([]);
-    const [ currentMood, setCurrentMood ] = useState({ name: "Neutral", color: "#DCDCDB"});
+    const [ currentMood, setCurrentMood ] = useState(neutral);
+    const [ entryStatus, setEntryStatus ] = useState("awaiting");
     
     // generate slices list before component mounts
     useEffect(() => {
@@ -43,8 +68,14 @@ const MoodPieContainer = () => {
                         
                         ctx.fillStrokeShape(this);
                     }}
-                    onClick={() => { setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor}) } }
-                    onTap={() => { setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor}) } }
+                    onClick={() => { 
+                        setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor}) 
+                        setEntryStatus("selected");
+                    } }
+                    onTap={() => { 
+                        setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor}) 
+                        setEntryStatus("selected");
+                    } }
                 />
             );
         })
@@ -121,9 +152,31 @@ const MoodPieContainer = () => {
 
     return (
         <div className="main-container">
-            <p>This is the Mood Tracking Pie Chart. Click on a portion of the pie to indicate your mood.</p>
+            <p className="table-message">Click on a slice of the pie to indicate your mood.</p>
             <Pie slices={pieSlices} labels={labelNodes}/>
-            <h3>You are feeling <span className="current-feeling" style={{backgroundColor: currentMood.color}}>{currentMood.name}</span></h3>
+            <h3 className="current-feeling" style={{backgroundColor: currentMood.color}}>You feel {currentMood.name}</h3>
+            { entryStatus === "selected" ?
+                (    
+                <div className="entry-message table-message">
+                    <span className="confirm-message">Is this correct?</span> 
+                    <button className="pie-button" onClick={ () => { recordResponse(setEntryStatus, currentMood) } }>Yes</button> 
+                    <button className="pie-button" onClick={ () => { 
+                        setCurrentMood(neutral); 
+                        setEntryStatus("awaiting"); 
+                        } }>No</button>
+                </div>
+                ) : 
+                (
+                <div className="entry-message">
+                    { statusMessages[entryStatus] }
+                    { entryStatus === "failed" && <button className="pie-button">Try again</button> }
+                </div>
+                )   
+            }
+ 
+        
+            
+
         </div>
     );
 

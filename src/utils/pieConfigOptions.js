@@ -2,7 +2,7 @@
 export const radiansToDegrees = (angle) => (angle * 180) / Math.PI;
 
 // all values are provided in pixels
-export const canvasOptions = {width: 600, height: 600, padding: 25}
+export const canvasOptions = {width: 500, height: 500, padding: 25}
 
 export const config = {
     centerX: Math.floor((canvasOptions.width - canvasOptions.padding) / 2),

@@ -10,28 +10,28 @@ const barChartOptions = {
     layout: { padding: 25 },
     scales: {
         xAxes: [{
-            ticks: {fontColor: "rgba(0, 0, 0, 1)" },
-            gridLines: { color: "rgba(0, 0, 0, 0.2)" }
+            ticks: {
+                fontColor: "#3E2312",
+                fontSize: 17 
+            },
+            gridLines: { 
+                display: false, 
+                color: "rgba(0, 0, 0, 0.2)" 
+            }
         }],
         yAxes: [{
+            display: false,
             ticks: {
                 min: 0,
+                stepSize: 1,
                 fontColor: "rgba(0, 0, 0, 1)" },
-            gridLines: { color: "rgba(0, 0, 0, 0.2)" }
+            gridLines: { 
+                display: false, 
+                color: "rgba(0, 0, 0, 0.2)" 
+            }
         }]
     }
 }
-
-/*
-let testData1 = {
-    labels: ["Foo", "Bar"],
-    datasets: [{
-        label: "Tally Count",
-        backgroundColor: ["#3e95cd", "#8e5ea2"],
-        data: [23, 35]
-    }]
-}
-*/
 
 // fetch mood tally counts from database
 const fetchMoodData = (updateDataFunction) => {
@@ -80,6 +80,7 @@ const MoodBarChartContainer = (props) => {
     return (
     <div className="outer-bar-chart-container">
         <div className="inner-bar-chart-container">
+            <div className="bar-chart-top">How is everyone else feeling?</div>
             <Bar 
                 data={barChartData}
                 options={barChartOptions}

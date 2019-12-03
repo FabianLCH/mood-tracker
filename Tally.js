@@ -3,7 +3,11 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const Tally = new Schema({
-    date: String,
+    date: {
+        year: Number,
+        month: Number,
+        day: Number
+    },
     totalEntries: Number,
     moods: [{
         name: String,

@@ -16,7 +16,7 @@ const statusMessages = {
 const recordResponse = (entryStateCallback, selectedMood) => {
     entryStateCallback("submitted");
 
-    axios.post("http://localhost:4000/api/moods", { mood: selectedMood.name }).then(
+    axios.post("/api/moods/today", { mood: selectedMood.name }).then(
         (res) => {
             entryStateCallback("recorded");
             setTimeout( () => { window.location = "/statistics"}, 3000);
@@ -152,12 +152,14 @@ const MoodPieContainer = () => {
 
     return (
         <div className="main-container">
-            <p className="table-message">Click on a slice of the pie to indicate your mood.</p>
+            <section className="top-section">
+                <span className="table-message">Let us know how you feel by choosing a slice of the pie!</span><a href="/statistics"><button>Go to statistics <i className="fas fa-angle-right"></i></button></a>
+            </section>
             <Pie slices={pieSlices} labels={labelNodes}/>
             <h3 className="current-feeling" style={{backgroundColor: currentMood.color}}>You feel {currentMood.name}</h3>
             { entryStatus === "selected" ?
                 (    
-                <div className="entry-message table-message">
+                <div className="entry-message">
                     <span className="confirm-message">Is this correct?</span> 
                     <button className="pie-button" onClick={ () => { recordResponse(setEntryStatus, currentMood) } }>Yes</button> 
                     <button className="pie-button" onClick={ () => { 
@@ -169,7 +171,7 @@ const MoodPieContainer = () => {
                 (
                 <div className="entry-message">
                     { statusMessages[entryStatus] }
-                    { entryStatus === "failed" && <button className="pie-button">Try again</button> }
+                    { entryStatus === "failed" && <button className="pie-button" onClick={ () => { recordResponse(setEntryStatus, currentMood) } }>Try again</button> }
                 </div>
                 )   
             }

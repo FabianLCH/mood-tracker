@@ -66,7 +66,7 @@ const fetchMoodData = (updateDataFunction) => {
 const statusMessageMapping = {
     0: {statusMessage: "Getting data from database..."},
     1: {statusMessage: "Connected to database.", iconClass: "fas fa-check"},
-    2: {statusMessage: "Oh no! We couldn't fetch the data. Please try again in a bit.", iconClass: "fas fa-exclamation", statusColor: "red"},
+    2: {statusMessage: "Oh no! We couldn't fetch the data. Please try again in a bit.", iconClass: "fas fa-exclamation"},
     3: {statusMessage: "Connection lost.", iconClass: "fas fa-times"}
 }
 
@@ -120,10 +120,7 @@ const MoodBarChartContainer = (props) => {
             updateInterval = setInterval( () => { 
                 
                 fetchMoodData(setTodayData).catch( error => {
-                    if(connectionStatus !== 3) {
-                        console.log(error);
                         setConnectionStatus(3);
-                    }
                 }) }, 10000);
         }).catch( (err) => {
             setConnectionStatus(2);

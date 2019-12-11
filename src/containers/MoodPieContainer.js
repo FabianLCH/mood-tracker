@@ -1,10 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Shape, Text } from "react-konva";
 import axios from "axios";
+import { Howl } from 'howler';
 
 import { config, data } from "../utils/pieConfigOptions";
 
 import Pie from "../components/Pie";
+
+// set the volume for audio
+
+const howlConfig = { 
+    src: ['pongblipg5.mp3', 'pongblipg5.wav', 'pongblipg5.ogg'],
+    volume: 0.2
+};
+
+const playBeep = () => {
+    let doubleBeep = new Howl(howlConfig);
+    doubleBeep.play();
+}
 
 const neutral = { name: "Neutral", color: "#DCDCDB"};
 const statusMessages = {
@@ -13,6 +26,7 @@ const statusMessages = {
     "failed": "Oops! It looks like something went wrong.",
     "recorded": "Thank you! Your response has been recorded"
 }
+
 const recordResponse = (entryStateCallback, selectedMood) => {
     entryStateCallback("submitted");
 
@@ -69,12 +83,14 @@ const MoodPieContainer = () => {
                         ctx.fillStrokeShape(this);
                     }}
                     onClick={() => { 
-                        setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor}) 
+                        setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor});
                         setEntryStatus("selected");
+                        playBeep();
                     } }
                     onTap={() => { 
                         setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor}) 
                         setEntryStatus("selected");
+                        playBeep();
                     } }
                 />
             );
@@ -137,8 +153,16 @@ const MoodPieContainer = () => {
                     fontSize={labelSize} 
                     fill={labelFontColor}
 
-                    onClick={() => { setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor}) } }
-                    onTap={() => { setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor}) } }
+                    onClick={() => { 
+                        setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor});
+                        setEntryStatus("selected");
+                        playBeep();
+                    }}
+                    onTap={() => { 
+                        setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor});
+                        setEntryStatus("selected"); 
+                        playBeep();
+                } }
                 />
             );
 

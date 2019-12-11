@@ -4,7 +4,7 @@
   font-family:  'Montserrat', sans-serif; 
 }
 
-html { background-image: url("./tactile_noise_@2X.png") }
+html { background-image: url("./tactile_noise.png") }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -56,7 +56,7 @@ select {
   align-items: center;
   height: 90%;
   width: 800px;
-  background: url("./purty_wood.png");
+  background: url("./purty_wood.jpg");
 }
 
 .top-section { margin-top: 25px }
@@ -111,7 +111,7 @@ select {
 .inner-bar-chart-container {
   width: 70%;
   text-align: center;
-  background-image: url("./purty_wood.png");
+  background-image: url("./purty_wood.jpg");
 }
 
 .inner-bar-chart-container button {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Shape, Text } from "react-konva";
+import { Shape } from "react-konva";
 import axios from "axios";
 import { Howl } from 'howler';
 
@@ -10,7 +10,7 @@ import Pie from "../components/Pie";
 // set the volume for audio
 
 const howlConfig = { 
-    src: ['pongblipg5.mp3', 'pongblipg5.wav', 'pongblipg5.ogg'],
+    src: ['bubble-pop.mp3', 'bubble-pop.wav', 'bubble-pop.ogg'],
     volume: 0.2
 };
 
@@ -49,7 +49,6 @@ const MoodPieContainer = () => {
 
     // state configuration 
     const [ pieSlices, updateSlices ] = useState([]);
-    const [ labelNodes, updateLabels ] = useState([]);
     const [ currentMood, setCurrentMood ] = useState(neutral);
     const [ entryStatus, setEntryStatus ] = useState("awaiting");
     
@@ -60,62 +59,31 @@ const MoodPieContainer = () => {
         let sliceAngle = 2 * Math.PI / data.length;
         let sliceStartAngle = 0;
 
-        // build the slices
-        let sliceList = data.map( (currentSlice, index) => {
-
-            // calculate arc begin and end angles
-            let beginAngle = sliceStartAngle;
-            let endAngle = sliceStartAngle + sliceAngle;
-
-            // update current start angle before returning
-            sliceStartAngle += sliceAngle;
-
-            return (
-                <Shape key={index} fill={currentSlice.portionColor} 
-                    sceneFunc={ function(ctx) {
-
-                        ctx.beginPath();
-                        ctx.moveTo(centerX, centerY);
-                        ctx.arc(centerX, centerY, radius, beginAngle, endAngle, false);
-                        ctx.lineTo(centerX, centerY);
-                        ctx.closePath();
-                        
-                        ctx.fillStrokeShape(this);
-                    }}
-                    onClick={() => { 
-                        setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor});
-                        setEntryStatus("selected");
-                        playBeep();
-                    } }
-                    onTap={() => { 
-                        setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor}) 
-                        setEntryStatus("selected");
-                        playBeep();
-                    } }
-                />
-            );
-        })
-        
-        //reset start angle
-        sliceStartAngle = 0;
-
         // get label config options
         let { labelRadiusModifier, labelSize, labelFontColor } = config;
 
         // build the slice labels
         let labelRadius = labelRadiusModifier * radius;
 
-        let sliceLabels = data.map( (currentSlice, index) => {
-            let { offsetX, offsetY } = currentSlice.labelPosition;
+        // build the slices
+        let sliceList = data.map( (currentSlice, index) => {
 
-            let dx;
-            let dy;
+            // calculate arc begin and end angles
+            let beginAngle = sliceStartAngle;
+            let endAngle = sliceStartAngle + sliceAngle;
+            
+            // get label data 
+            let { offsetX, offsetY } = currentSlice.labelPosition;
+            let { name } = currentSlice;
+
+            let dx, dy;
 
             let labelAngle = sliceStartAngle + (sliceAngle * 0.55);
              
             let angleSector = Math.floor(labelAngle / (Math.PI / 2));
             let angleRemainder = labelAngle % (Math.PI / 2);
             
+            // calculate regular displacement
             switch(angleSector) {
                 case(0):
                     dx = Math.cos(angleRemainder) * labelRadius;
@@ -138,39 +106,43 @@ const MoodPieContainer = () => {
                     dy = 0;
                     break;
             }
-            
 
+            // update current start angle before returning
             sliceStartAngle += sliceAngle;
 
-            // text color and size will be set through config options 
             return (
-                <Text
-                    key={index}
-                    x={centerX + dx + offsetX}
-                    y={centerY + dy + offsetY}
-
-                    text={currentSlice.name} 
-                    fontSize={labelSize} 
-                    fill={labelFontColor}
-
+                <Shape key={index} fill={currentSlice.portionColor} draggable
+                    sceneFunc={ function(ctx) {
+                        // draw pie slice
+                        ctx.beginPath();
+                        ctx.moveTo(centerX, centerY);
+                        ctx.arc(centerX, centerY, radius, beginAngle, endAngle, false);
+                        ctx.lineTo(centerX, centerY);
+                        ctx.closePath();
+                        
+                        ctx.fillStrokeShape(this);
+                        
+                        // draw text over slice
+                        ctx.font = `${labelSize}px Arial`;
+                        ctx.fillStyle = labelFontColor;
+                        ctx.fillText(name, centerX + dx + offsetX, centerY + dy + offsetY);
+                    }}
                     onClick={() => { 
                         setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor});
                         setEntryStatus("selected");
                         playBeep();
-                    }}
+                    } }
                     onTap={() => { 
-                        setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor});
-                        setEntryStatus("selected"); 
+                        setCurrentMood({name: currentSlice.name, color: currentSlice.portionColor}) 
+                        setEntryStatus("selected");
                         playBeep();
-                } }
+                    } }
                 />
             );
-
-        });
-
+        })
+        
         // add slices and labels to pie
         updateSlices(sliceList);
-        updateLabels(sliceLabels);
 
     }, [centerX, centerY, radius]);
 
@@ -179,7 +151,7 @@ const MoodPieContainer = () => {
             <section className="top-section">
                 <span className="table-message">Let us know how you feel by choosing a slice of the pie!</span><a href="/statistics"><button>Go to statistics <i className="fas fa-angle-right"></i></button></a>
             </section>
-            <Pie slices={pieSlices} labels={labelNodes}/>
+            <Pie slices={pieSlices} />
             <h3 className="current-feeling" style={{backgroundColor: currentMood.color}}>You feel {currentMood.name}</h3>
             { entryStatus === "selected" ?
                 (    

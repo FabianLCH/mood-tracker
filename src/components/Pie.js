@@ -13,7 +13,6 @@ const Pie = (props) => {
             <Layer>
                 <Circle x={centerX} y={centerY} radius={radius + crustRadius} fill={crustColor} />
                 { props.slices }
-                { props.labels }
             </Layer>
         </Stage>
     );

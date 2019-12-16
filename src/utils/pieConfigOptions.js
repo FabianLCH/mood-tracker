@@ -13,46 +13,56 @@ export const config = {
     crustColor: "#EEC670",
 
     labelRadiusModifier: 0.6,
-    labelSize: 20,
+    labelSize: 18,
     labelFontColor: "rgba(0, 0, 0, 0.8)"
 };
 
 // mood pie slice data
 export const data = [
   { 
-    name: 'Angry', 
-    labelPosition: { offsetX: 0, offsetY: 0 },
-    portionColor: "#FF4C33"
+    name: 'Frustrated', 
+    labelPosition: { offsetX: -30, offsetY: 0 },
+    portionColor: "#EB8838"
   },
   {
-    name: 'Disgusted',
-    labelPosition: {offsetX: -35, offsetY: 0 },
-    portionColor: "#9D908E"
+    name: 'Numb',
+    labelPosition: {offsetX: -20, offsetY: 0 },
+    portionColor: "#C2B5A6"
   },
   {
     name: 'Sad',
     labelPosition: {offsetX: -15, offsetY: 0},
-    portionColor: "#759297"
+    portionColor: "#5D6EE4"
   },
   {
     name: 'Happy',
-    labelPosition: {offsetX: -30, offsetY: 0},
-    portionColor: "#F1EE4B"
+    labelPosition: {offsetX: -25, offsetY: 5},
+    portionColor: "#EFED49"
   },
   {
     name: 'Surprised',
-    labelPosition: {offsetX: -55, offsetY: -5},
-    portionColor: "#9372A3"
+    labelPosition: {offsetX: -45, offsetY: 10},
+    portionColor: "#E35AD8"
   },
   {
-    name: 'Bad',
-    labelPosition: {offsetX: -25, offsetY: 0},
-    portionColor: "#62C465"
+    name: 'Drowsy',
+    labelPosition: {offsetX: -45, offsetY: 5},
+    portionColor: "#AFA6B6"
   },
   {
     name: 'Fearful',
-    labelPosition: {offsetX: -25, offsetY: -10},
-    portionColor: "#D5BC4B"
+    labelPosition: {offsetX: -37, offsetY: -5},
+    portionColor: "#D5BA42"
+  },
+  {
+    name: 'Confident',
+    labelPosition: {offsetX: -35, offsetY: 0},
+    portionColor: "#52E798"
+  },
+  {
+    name: 'Delighted',
+    labelPosition: {offsetX: -30, offsetY: 5},
+    portionColor: "#B3EA4A"
   }
 ];
 

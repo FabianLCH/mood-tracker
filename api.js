@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const Tally = require("./Tally");
+const Tally = require("./schemas/Tally");
 
 // locally stored list of moods
 const moodList = ["Angry", "Disgusted", "Sad", "Happy", "Surprised", "Bad", "Fearful"];
@@ -10,6 +10,8 @@ const moodList = ["Angry", "Disgusted", "Sad", "Happy", "Surprised", "Bad", "Fea
 router.use("/moods", (req, res, next) => {
     let today = new Date();
     let dateObject = { year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate() };
+
+    res.setHeader("Content-Type", "application/json")
 
     req.dateObject = dateObject;
 
@@ -21,12 +23,9 @@ router.use("/moods/today", (req, res, next) => {
     let { dateObject } = req;
     let formattedDate = `${dateObject.year}-${dateObject.month}-${dateObject.day}`;
 
-    Tally.findOne( { date: dateObject }, (err, tallyDocument) => {
-        if(err) 
-            return res.json({success: false, error: err, data: []});
-
+    Tally.findOne({date: dateObject }).exec().then( doc => {
         // if document for current date does not exist, create a new one
-        if(!tallyDocument) {
+        if(!doc) {
             console.log(`No entries found for ${formattedDate}. Creating entry...`);
 
             let tallyObj = {
@@ -48,23 +47,29 @@ router.use("/moods/today", (req, res, next) => {
             let todayTallyCount = new Tally(tallyObj);
 
             console.log("Saving entry...");
-            todayTallyCount.save((err) => {
-                if (err) {
-                    console.log("Could not create new entry.\n", err);
-                    return res.json({success: false, error: `No entry for ${formattedDate}.`, data: []});
+   
+            todayTallyCount.save().then( newDoc => {
+                // if the same document is returned, saving was successful
+                if(newDoc === todayTallyCount) {
+                    console.log(`New entry for ${formattedDate} has been created.`);
+                    return req.method === "POST" ? res.status(204).send() : res.json({success: true, data: tallyObj});
                 }
                 else {
-                    console.log(`New entry for ${formattedDate} has been created.`);
-                    return req.method === "POST" ? res.status(204).send() : res.json({success: true, data: tallyObj});   
+                    throw new Error("Failed to save document to database.")
                 }
-            });
+            })
+            .catch(err => {
+                console.log("Could not create new entry.\n", err);
+                return res.json({success: false, error: `No entry for ${formattedDate}.`, data: []});
+            })
         }
         // if entry already exists, send to next middleware
         else {
-            req.tallyDocument = tallyDocument;
+            req.tallyDocument = doc;
             next();
         }
-    });
+    })
+    .catch(err => res.json({success: false, error: err, data: []}))
 });
 
 // get mood data for the current date
@@ -95,26 +100,27 @@ router.post("/moods/today", (req, res) => {
     Tally.updateOne(
         { date: dateObject, "moods.name": mood }, 
         { $inc: { totalEntries: 1, "moods.$.tally": 1 } }, 
-        {new: false}, 
-        (err) => {
-            if(err) return res.status(404).send();
-            else return res.status(204).send();
-    })
-}); 
+        {new: false}).exec().then( updated => {
+            if(updated)
+                return res.status(204).json({success: true})
+            else
+                throw new Error(`Could not increase tally count for mood ${mood}.`)
+        })
+        .catch(err => {
+            console.error(err)
+            return res.status(404).send()
+        })
+});
 
 // get moods for previous dates
 router.get("/moods/previous", (req, res) => {
     let { dateObject } = req;
 
     Tally.find({ date: { $not: { $eq: dateObject } } })
-    .sort({ 'date': -1 })
+    .sort({ date: -1 })
     .limit(6)
-    .exec( (err, tallyDocumentList) => {
-        if(err)
-            return res.json({success: false, error: err, data: []});
-        
-        return res.send({success: true, data: tallyDocumentList});
-    });
+    .exec().then( docList => res.json({success: true, data: docList}))
+    .catch(err => res.json({success: false, error: err, data: []}))
 });
 
 module.exports = router;

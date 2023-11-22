@@ -8,11 +8,11 @@ const path = require("path");
 const API_PORT = process.env.PORT || 4000;
 const app = express();
 
-const { dbRoute } = require("./secrets");
+require("dotenv").config();
 
 const api = require("./api");
 
-mongoose.connect(dbRoute, {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(process.env.CONNECTION_STRING);
 let db = mongoose.connection;
 
 // db connection and connection error handling

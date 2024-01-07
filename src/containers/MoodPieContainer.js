@@ -1,14 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { Shape } from "react-konva";
-import axios from "axios";
 import { Howl } from 'howler';
+import { Link } from 'react-router-dom';
+
+import { useNavigate } from "react-router-dom";
 
 import { config, data } from "../utils/pieConfigOptions";
 
 import Pie from "../components/Pie";
+import { getAPIHost } from "../utils/getAPIHost";
+
+const API_HOST = getAPIHost()
+
+let reqOptions = {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    }
+}
+
+const corsOptions = {
+    mode: "cors",
+    credentials: "omit"
+}
+
+if(process.env.NODE_ENV !== "production") {
+    Object.assign(reqOptions, corsOptions)
+}
 
 // set the volume for audio
-
 const howlConfig = { 
     src: ['bubble-pop.mp3', 'bubble-pop.wav', 'bubble-pop.ogg'],
     volume: 0.2
@@ -27,23 +47,28 @@ const statusMessages = {
     "recorded": "Thank you! Your response has been recorded"
 }
 
-const recordResponse = (entryStateCallback, selectedMood) => {
+const recordResponse = (entryStateCallback, selectedMood, navigate) => {
     entryStateCallback("submitted");
 
-    axios.post("/api/moods/today", { mood: selectedMood.name }).then(
-        (res) => {
-            entryStateCallback("recorded");
-            setTimeout( () => { window.location = "/statistics"}, 3000);
+    fetch(`${API_HOST}/api/moods/today/`, {
+        ...reqOptions,
+        body: JSON.stringify({mood: selectedMood.name })
+    }).then(res => {
+        if(res.ok) {
+            entryStateCallback("recorded")
+            setTimeout( () => { navigate("/statistics") }, 3000)
         }
-    ).catch(
-        (error) => {
-            entryStateCallback("failed");
-            console.log("Could not record entry,\n", error);
+        else {
+            throw new Error("Could not record entry.")
         }
-    )
+    }).catch(err => {
+        entryStateCallback("failed")
+        console.error(err)
+    })
 }
 
 const MoodPieContainer = () => {
+    const navigate = useNavigate()
 
     let { centerX, centerY, radius } = config;
 
@@ -149,7 +174,7 @@ const MoodPieContainer = () => {
     return (
         <div className="main-container">
             <section className="top-section">
-                <span className="table-message">Let us know how you feel by choosing a slice of the pie!</span><a href="/statistics"><button>Go to statistics <i className="fas fa-angle-right"></i></button></a>
+                <span className="table-message">Let us know how you feel by choosing a slice of the pie!</span><Link to="/statistics"><button>Go to statistics <i className="fas fa-angle-right"></i></button></Link>
             </section>
             <Pie slices={pieSlices} />
             <h3 className="current-feeling" style={{backgroundColor: currentMood.color}}>You feel {currentMood.name}</h3>
@@ -157,7 +182,7 @@ const MoodPieContainer = () => {
                 (    
                 <div className="entry-message">
                     <span className="confirm-message">Is this correct?</span> 
-                    <button className="pie-button" onClick={ () => { recordResponse(setEntryStatus, currentMood) } }>Yes</button> 
+                    <button className="pie-button" onClick={ () => { recordResponse(setEntryStatus, currentMood, navigate) } }>Yes</button> 
                     <button className="pie-button" onClick={ () => { 
                         setCurrentMood(neutral); 
                         setEntryStatus("awaiting"); 
@@ -171,10 +196,6 @@ const MoodPieContainer = () => {
                 </div>
                 )   
             }
- 
-        
-            
-
         </div>
     );
 

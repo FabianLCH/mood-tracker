@@ -1,43 +1,75 @@
 import React, { useState, useEffect } from "react";
+import 'chart.js/auto'
 import { Bar } from "react-chartjs-2";
-import axios from "axios";
+import { Link } from "react-router-dom";
 
-import { moodColorMapping } from "../utils/pieConfigOptions";
+import { moodColorMapping } from "../utils/pieConfigOptions"
+import { getAPIHost } from "../utils/getAPIHost";
+
+const API_HOST = getAPIHost()
+
+let reqOptions = {
+    method: "GET",
+    headers: {
+        "Content-Type": "application/json"
+    }
+}
+
+const corsOptions = {
+    mode: "cors",
+    credentials: "omit"
+}
+
+if(process.env.NODE_ENV !== "production") {
+    Object.assign(reqOptions, corsOptions)
+}
 
 const barChartOptions = {
     responsive: true,
     legend: { display: false },
     layout: { padding: 10 },
     scales: {
-        xAxes: [{
+        x: {
             ticks: {
-                fontColor: "#3E2312",
-                fontSize: 17 
+                color: "#000000"
             },
-            gridLines: { 
-                display: false, 
-                color: "rgba(0, 0, 0, 0.2)" 
+            grid: {
+                display: false,
+                color: "#000000"
+            },
+            border: {
+                color: "rgba(0,0,0,0.5)"
             }
-        }],
-        yAxes: [{
-            display: false,
+        },
+        y: {
+            min: 0,
             ticks: {
-                min: 0,
                 stepSize: 1,
-                fontColor: "rgba(0, 0, 0, 1)" },
-            gridLines: { 
-                display: false, 
-                color: "rgba(0, 0, 0, 0.2)" 
+                color: "#000000"
+            },
+            grid: {
+                display: false,
+                color: "#000000"
+            },
+            border: {
+                color: "rgba(0,0,0,0.5)"
             }
-        }]
+        }
     }
 }
 
 // fetch mood tally counts from database
 const fetchMoodData = (updateDataFunction) => {
-    return axios.get("/api/moods/today").then(
+
+    return fetch(`${API_HOST}/api/moods/today`, reqOptions).then(
+        (res) => { 
+            if(res.ok) 
+                return res.json()
+
+            throw new Error("Could not fetch mood data.")
+        }).then(
         (resp) => {
-            let { moods } = resp.data.data;
+            let { moods } = resp.data;
 
             let moodLabels = [];
             let moodColors = [];
@@ -60,7 +92,7 @@ const fetchMoodData = (updateDataFunction) => {
 
             updateDataFunction(barData);
         }
-    );
+    ).catch(err => console.error(err))
 };
 
 const statusMessageMapping = {
@@ -70,11 +102,17 @@ const statusMessageMapping = {
     3: {statusMessage: "Connection lost.", iconClass: "fas fa-times"}
 }
 
-const MoodBarChartContainer = (props) => {
+const MoodBarChartContainer = () => {
     
     const [ connectionStatus, setConnectionStatus ] = useState(0);
     const [ dataSelect, setDataSelect ] = useState({isToday: true, index: 0});
-    const [ todayData, setTodayData ] = useState({});
+    const [ todayData, setTodayData ] = useState({
+        labels: ["Mood"],
+        datasets: [{
+            label: "Dataset",
+            data: [0]
+        }]
+    });
     const [ prevDataList, populatePrevDataList ] = useState([]);
 
     useEffect(() => {
@@ -84,9 +122,16 @@ const MoodBarChartContainer = (props) => {
 
             setConnectionStatus(1);
             // then get previous data (only executed at start as old data will not change)
-            return axios.get("/api/moods/previous"); 
-        }).then((resp) => {
-            let tallyArray = resp.data.data;
+            return fetch(`${API_HOST}/api/moods/previous`, reqOptions); 
+        })
+        .then(res => {
+            if(res.ok)
+                return res.json()
+
+                throw new Error("Could not fetch historical data.")
+        })
+        .then((resp) => {
+            let tallyArray = resp.data;
             let formattedTallyArray = tallyArray.map( (entry, index) => {
                 let prevMoodLabels = [];
                 let prevMoodColors = [];
@@ -118,16 +163,14 @@ const MoodBarChartContainer = (props) => {
 
             // set the update interval
             updateInterval = setInterval( () => { 
-                
+                // fetch data every 10s
                 fetchMoodData(setTodayData).catch( error => {
                         setConnectionStatus(3);
                 }) }, 10000);
         }).catch( (err) => {
             setConnectionStatus(2);
-            console.log("Could not fetch data.\n", err);
+            console.error(err);
         });
-
-        // fetch data every 10s
 
         // on unmount, clear interval to stop callbacks if it was created
         return () => {
@@ -140,7 +183,7 @@ const MoodBarChartContainer = (props) => {
     return (
     <div className="outer-bar-chart-container">
         <div className="inner-bar-chart-container">
-            <div className="bar-chart-top">{dataSelect.isToday ? "How is everyone else feeling?" : "How did everyone else feel?"}<a href="/"><button><i className="fas fa-angle-left"></i> Back to mood pie</button></a></div>
+            <div className="bar-chart-top">{dataSelect.isToday ? "How is everyone else feeling?" : "How did everyone else feel?"}<Link to="/"><button><i className="fas fa-angle-left"></i> Back to mood pie</button></Link></div>
             <div className="status-message" ><i className={iconClass || "fas fa-circle"}></i> {statusMessage}</div>
             <Bar 
                 data={dataSelect.isToday ? todayData : prevDataList[dataSelect.index]}

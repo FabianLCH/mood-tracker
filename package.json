@@ -1,0 +1,12 @@
+{
+  "name": "mood-tracker",
+  "version": "1.0.0",
+  "description": "A full-stack web application that anonymously tracks user-submitted mood data.",
+  "main": "server/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

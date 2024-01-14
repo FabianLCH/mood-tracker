@@ -30,7 +30,15 @@ app.use(cors());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-// router for HTTP requests
+// serve React app from build folder
+app.use(express.static("build"))
+
+// router API requests
 app.use("/api", api);
+
+// route any non-server requests to React app
+app.use((_, res) => {
+    res.sendFile(path.join(__dirname, "build", "index.html"))
+})
 
 app.listen(API_PORT, () => { console.log(`Listening on port ${API_PORT}.`)});

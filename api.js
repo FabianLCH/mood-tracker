@@ -4,7 +4,7 @@ const router = express.Router();
 const Tally = require("./schemas/Tally");
 
 // locally stored list of moods
-const moodList = ["Angry", "Disgusted", "Sad", "Happy", "Surprised", "Bad", "Fearful"];
+const moodList = ["Frustrated", "Numb", "Sad", "Happy", "Surprised", "Drowsy", "Fearful", "Confident", "Delighted"];
 
 // calculate current date and pass to next middleware 
 router.use("/moods", (req, res, next) => {

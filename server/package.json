@@ -4,7 +4,7 @@
   "description": "Mood Pie Chart server",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "env NODE_ENV=\"production\" bash -c \"node server.js\"",
     "dev": "nodemon -e js --watch . --watch schemas server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

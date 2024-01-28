@@ -1,68 +1,39 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Mood Tracker | Client
 
-## Available Scripts
+Bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-In the project directory, you can run:
+## Setup
 
-### `npm start`
+For setup instructions, refer to the project's main [README](../README.md).
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Components
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+### `Pie`
 
-### `npm test`
+The app's main component. Its purpose is to initialize the `<canvas>` element where the pie chart will be drawn using a set of configuration options defined in `./src/utils/pieConfigOptions.js`.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The component accepts a single `slices` prop, which is expected to be a list of `<Shape>` objects representing the slices of the pie chart.
 
-### `npm run build`
+## Views
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The app has two main views:
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+### `MoodPieContainer`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**Route:** `/`
 
-### `npm run eject`
+This is where users can anonymously share how they are currently feeling. It features an interactive pie chart with draggable slices that users are able to click to select the mood that best identifies how they currently feel. When a user selects a slice, a sound effect will play.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### `MoodBarChartContainer`
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**Route:** `/statistics`
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+This is where users can view the cumulative data submitted by themselves and other users for a given date. The view features an interactive bar chart that reads from the database and updates its display within a set interval.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Users are able to choose whether they wish to view the data for the current date or for one of the previous six dates for which data has been recorded.
 
-## Learn More
+## Credits
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+- [Purty Wood Pattern](https://www.toptal.com/designers/subtlepatterns/purty-wood/) - Made by Richard Tabor
+- [Tactile Noise Pattern](https://www.toptal.com/designers/subtlepatterns/tactile-noise/) - Made by Atle Mo
+- Bubble Pop Sound Effect - Obtained from Pixabay

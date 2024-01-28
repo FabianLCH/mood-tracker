@@ -6,9 +6,14 @@
   "scripts": {
     "start": "cd server && npm start",
     "build": "cd client && npm install && npm run build && cp -r build ../server/ && cd ../server/ && npm install",
+    "install-packages": "npm install && cd client && npm install && cd ../server && npm install",
+    "dev": "concurrently -k \"cd client && npm start\" \"cd server && npm run dev\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "Fabian Lozano",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
 }

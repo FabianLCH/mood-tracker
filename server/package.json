@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "mood-tracker-server",
   "version": "1.0.0",
   "description": "Mood Pie Chart server",
   "main": "server.js",

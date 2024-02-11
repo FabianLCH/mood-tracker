@@ -9,6 +9,7 @@ import { config, data } from "../utils/pieConfigOptions";
 
 import Pie from "../components/Pie";
 import { getAPIHost } from "../utils/getAPIHost";
+import MoodConfirm from "../components/MoodConfim";
 
 const API_HOST = getAPIHost()
 
@@ -40,12 +41,6 @@ const playBeep = () => {
 }
 
 const neutral = { name: "Neutral", color: "#DCDCDB"};
-const statusMessages = {
-    "awaiting": "You have not selected a mood yet.",
-    "submitted": "Saving your response...",
-    "failed": "Oops! It looks like something went wrong.",
-    "recorded": "Thank you! Your response has been recorded"
-}
 
 const recordResponse = (entryStateCallback, selectedMood, navigate) => {
     entryStateCallback("submitted");
@@ -177,25 +172,15 @@ const MoodPieContainer = () => {
                 <span className="table-message">Let us know how you feel by choosing a slice of the pie!</span><Link to="/statistics"><button>Go to statistics <i className="fas fa-angle-right"></i></button></Link>
             </section>
             <Pie slices={pieSlices} />
-            <h3 className="current-feeling" style={{backgroundColor: currentMood.color}}>You feel {currentMood.name}</h3>
-            { entryStatus === "selected" ?
-                (    
-                <div className="entry-message">
-                    <span className="confirm-message">Is this correct?</span> 
-                    <button className="pie-button" onClick={ () => { recordResponse(setEntryStatus, currentMood, navigate) } }>Yes</button> 
-                    <button className="pie-button" onClick={ () => { 
-                        setCurrentMood(neutral); 
-                        setEntryStatus("awaiting"); 
-                        } }>No</button>
-                </div>
-                ) : 
-                (
-                <div className="entry-message">
-                    { statusMessages[entryStatus] }
-                    { entryStatus === "failed" && <button className="pie-button" onClick={ () => { recordResponse(setEntryStatus, currentMood) } }>Try again</button> }
-                </div>
-                )   
-            }
+            <MoodConfirm 
+                currentMood={currentMood}
+                selectionStatus={entryStatus}
+                submitCallback={() => { recordResponse(setEntryStatus, currentMood, navigate) }}
+                cancelCallback={ () => { 
+                    setCurrentMood(neutral); 
+                    setEntryStatus("awaiting"); }
+                }
+            />
         </div>
     );
 

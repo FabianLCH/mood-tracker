@@ -169,7 +169,7 @@ const MoodBarChartContainer = () => {
                 }) }, 10000);
         }).catch( (err) => {
             setConnectionStatus(2);
-            console.error(err);
+            console.error(err.stack);
         });
 
         // on unmount, clear interval to stop callbacks if it was created

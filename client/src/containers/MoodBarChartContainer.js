@@ -183,7 +183,7 @@ const MoodBarChartContainer = () => {
     return (
     <div className="outer-bar-chart-container">
         <div className="inner-bar-chart-container">
-            <div className="bar-chart-top">{dataSelect.isToday ? "How is everyone else feeling?" : "How did everyone else feel?"}<Link to="/"><button><i className="fas fa-angle-left"></i> Back to mood pie</button></Link></div>
+            <div className="bar-chart-top"><span>{dataSelect.isToday ? "How is everyone else feeling?" : "How did everyone else feel?"}</span><Link to="/"><button><i className="fas fa-angle-left"></i> Back to mood pie</button></Link></div>
             <div className="status-message" ><i className={iconClass || "fas fa-circle"}></i> {statusMessage}</div>
             <Bar 
                 data={dataSelect.isToday ? todayData : prevDataList[dataSelect.index]}

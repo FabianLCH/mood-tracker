@@ -9,7 +9,10 @@ const Pie = (props) => {
     let { width, height } = canvasOptions;
 
     return (
-        <Stage width={ width } height={ height }>
+        <Stage 
+            width={ width } 
+            height={ height }
+        >
             <Layer>
                 <Circle x={centerX} y={centerY} radius={radius + crustRadius} fill={crustColor} />
                 { props.slices }

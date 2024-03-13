@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import 'chart.js/auto'
 import { Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
 
 import { moodColorMapping } from "../utils/pieConfigOptions"
 import { getAPIHost } from "../utils/getAPIHost";
+import { useWindowVisibility } from "../hooks/useWindowVisibility";
 
 const API_HOST = getAPIHost()
 
@@ -115,18 +116,15 @@ const MoodBarChartContainer = () => {
     });
     const [ prevDataList, populatePrevDataList ] = useState([]);
 
-    useEffect(() => {
-        let updateInterval;
-        // get today's mood data
-        fetchMoodData(setTodayData).then(() => {
+    const isWindowVisible = useWindowVisibility()
 
-            setConnectionStatus(1);
-            // then get previous data (only executed at start as old data will not change)
-            return fetch(`${API_HOST}/api/moods/previous`, reqOptions); 
-        })
+    useEffect(() => {
+        fetch(`${API_HOST}/api/moods/previous`, reqOptions)
         .then(res => {
-            if(res.ok)
+            if(res.ok) {
+                setConnectionStatus(1)
                 return res.json()
+            }
 
                 throw new Error("Could not fetch historical data.")
         })
@@ -161,23 +159,31 @@ const MoodBarChartContainer = () => {
             // add formatted data for previous dates to state
             populatePrevDataList(formattedTallyArray);
 
-            // set the update interval
-            updateInterval = setInterval( () => { 
-                // fetch data every 10s
-                fetchMoodData(setTodayData).catch( error => {
-                        setConnectionStatus(3);
-                }) }, 10000);
         }).catch( (err) => {
             setConnectionStatus(2);
             console.error(err.stack);
         });
-
-        // on unmount, clear interval to stop callbacks if it was created
-        return () => {
-            if(updateInterval)
-                clearInterval(updateInterval); 
-            }; 
     }, []);
+
+    const updateInterval = useRef(null)
+
+    useEffect(() => {
+        if(isWindowVisible && dataSelect.isToday) {
+            fetchMoodData(setTodayData)
+            .catch(_ => { setConnectionStatus(3) })
+
+            updateInterval.current = setInterval(() => {
+                fetchMoodData(setTodayData)
+                .then(_ => { setConnectionStatus(1) })
+                .catch(_ => { setConnectionStatus(3) })
+            }, 60000)
+        }
+
+        return () => {
+            if(updateInterval.current)
+                clearInterval(updateInterval.current)
+        }
+    }, [isWindowVisible, dataSelect])
 
     let { statusMessage, iconClass } = statusMessageMapping[connectionStatus];
     return (

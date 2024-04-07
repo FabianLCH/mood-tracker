@@ -6,6 +6,8 @@ The app is built using the MERN (MongoDB, Express.js, React, Node.js) stack, and
 
 Interested in seeing the project running? [View it here!](https://mood-tracker-azz1.onrender.com)
 
+**NOTE:** The app may take some time to start.
+
 ## Components
 
 The app consists of two main parts:
